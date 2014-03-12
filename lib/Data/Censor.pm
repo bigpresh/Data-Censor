@@ -83,8 +83,8 @@ sub new {
         };
     }
 
-    if (ref $args{replacement_callback} eq 'CODE') {
-        $self->{replacement_callback} = $args{replacement_callback};
+    if (ref $args{replacement_callbacks} eq 'HASH') {
+        $self->{replacement_callbacks} = $args{replacement_callbacks};
     }
     if (exists $args{replacement}) {
         $self->{replacement} = $args{replacement};
@@ -131,8 +131,8 @@ sub censor {
             ($self->{censor_regex} && $key =~ $self->{censor_regex})
         ) {
             # OK, censor this
-            if ($self->{replacement_callback}) {
-                $data->{$key} = $self->{replacement_callback}->(
+            if ($self->{replacement_callbacks}{lc $key}) {
+                $data->{$key} = $self->{replacement_callbacks}{lc $key}->(
                     $data->{$key}
                 );
                 $censored++;
