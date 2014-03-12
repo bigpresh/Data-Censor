@@ -4,7 +4,6 @@ use 5.006;
 use strict;
 use warnings FATAL => 'all';
 use Carp;
-use Clone;
 
 =head1 NAME
 
@@ -145,6 +144,24 @@ sub censor {
 
     return $censored;
 }
+
+=head2 censored_data
+
+Class method for quick censoring with default options - takes a hashref, clones
+it, applies censoring, and returns the resulting cloned hashref.
+
+=cut
+sub censored_data {
+    my $class = shift;
+    my $data = shift;
+    
+    eval { require Clone; 1 }
+        or die "Can't clone data without Clone installed";
+
+    my $cloned_data = Clone::clone($data);
+    $class->new->censor($cloned_data);
+    return $cloned_data;
+};
 
 
 =head1 AUTHOR
