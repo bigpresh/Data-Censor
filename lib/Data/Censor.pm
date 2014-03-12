@@ -21,10 +21,23 @@ our $VERSION = '0.02';
 =head1 SYNOPSIS
 
     # OO way, letting you specify your own list of sensitive-looking fields, and
-    # what they should be replaced by
+    # what they should be replaced by (all options here are optional)
     my $censor = Data::Censor->new(
+        # Specify which fields to censor:
         sensitive_fields => [ qw(card_number password) ],
+
+        # Specify text to replace their values with:
         replacement => '(Sensitive data hidden)',
+
+        # Or specify callbacks for each field name which return the "censored"
+        # value - in this case, masking a card number (PAN) to show only the
+        # last four digits:
+        replacement_callbacks => {
+            card_number => sub {
+                my $pan = shift;
+                return "x" x (length($pan) - 4) . substr($pan, -4, 4);
+            },
+        },
     );
     
     # Censor the data in-place (changes the data structure, returns the number
@@ -49,7 +62,9 @@ against each key to see if it's considered sensitive.
 
 =item replacement
 
-The string to replace each value with
+The string to replace each value with.  Any censoring callback provided in
+C<replacement_callbacks> which matches this key will take precedence over this
+straightforward value.
 
 =item replacement_callbacks
 
@@ -57,6 +72,8 @@ A hashref of key => sub {...}, where each key is a column name to match, and the
 coderef takes the uncensored value and returns the censored value, letting you
 for instance mask a card number but leave the last 4 digits visible.
 
+If you provide both C<replacement> and C<replacement_callbacks>, any callback
+defined which matches the key being considered takes precedence.
 =back
 
 =cut
