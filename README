@@ -16,8 +16,9 @@ SYNOPSIS
         # of keys censored)
         my $censor_count = $censor->censor(\%data);
 
-        # Or clone the original data structure and return it after censoring:
-        my $censored_data = $censor->censored_data(\%data);
+        # Alternate non-OO interface, using default settings and returning a cloned
+        # version of the data after censoring:
+        my $censored_data = Data::Censor->clone_and_censor(\%data);
 
 new (CONSTRUCTOR)
     Accepts the following arguments:
@@ -40,9 +41,20 @@ METHODS
     Given a data structure (hashref), clones it and returns the cloned
     version after censoring potentially sensitive data within.
 
-  censored_data
-    Class method for quick censoring with default options - takes a hashref,
-    clones it, applies censoring, and returns the resulting cloned hashref.
+  clone_and_censor
+    Clones the provided hashref (using Clone - will die if not installed),
+    then censors the cloned data and returns it.
+
+    Can be used both as a class or object method - the former for a quick
+    way to use it without having to instantiate an object, the latter if you
+    want to apply custom settings to the object before using it.
+
+      # As a class method
+      my $censored_data = Data::Censor->clone_and_censor($data);
+
+      # or as an object method
+      my $censor = Data::Censor->new( replacement => "SECRET!" );
+      my $censored_data = $censor->clone_and_censor($data);
 
 AUTHOR
     David Precious (BIGPRESH), `<davidp at preshweb.co.uk>'
