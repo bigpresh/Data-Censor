@@ -5,7 +5,7 @@ use warnings FATAL => 'all';
 use Test::More;
 use Data::Censor;
 
-plan tests => 9;
+plan tests => 11;
 
 diag( "Testing Data::Censor $Data::Censor::VERSION, Perl $], $^X" );
 
@@ -52,10 +52,21 @@ is ($data->{card}{pan}, 'xxxxxxxxx0006', "pan censored by callback");
 # Test basic censored_data call
 SKIP: {
     eval { require Clone };
-    skip "Clone not installed", 2 if $@;
+    skip "Clone not installed", 4 if $@;
+    # Test using censored_data as a class method
     my $censored_data = Data::Censor->censored_data(get_data());
-    is($censored_data->{password}, $hidden, "censored_data password censored");
+    is($censored_data->{password}, $hidden,
+        "censored_data password censored (used as class method)");
     is($censored_data->{email}, 'davidp@preshweb.co.uk',
-        "censored_data email not censored");
+        "censored_data email not censored (used as class method)");
+
+    # Test using censored_data as an object method
+    my $censor = Data::Censor->new( replacement => 'FOO' );
+    $censored_data = $censor->censored_data(get_data());
+    is ($censored_data->{password}, 'FOO',
+        "censored_data password censored (used as object method)");
+    is ($censored_data->{email}, 'davidp@preshweb.co.uk',
+        "censored_data email not censored (used as object method)");
 }
+
 
