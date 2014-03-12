@@ -31,9 +31,9 @@ our $VERSION = '0.01';
     # of keys censored)
     my $censor_count = $censor->censor(\%data);
 
-    # Or clone the original data structure and return it after censoring:
-    my $censored_data = $censor->censored_data(\%data);
-
+    # Alternate non-OO interface, using default settings and returning a cloned
+    # version of the data after censoring::
+    my $censored_data = Data::Censor->censored_data(\%data);
 
 
 =head1 new (CONSTRUCTOR)
