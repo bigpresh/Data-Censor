@@ -49,24 +49,24 @@ $count = $censor->censor($data);
 is($data->{password}, $hidden, "password censored normally");
 is ($data->{card}{pan}, 'xxxxxxxxx0006', "pan censored by callback");
 
-# Test basic censored_data call
+# Test basic clone_and_censor call
 SKIP: {
     eval { require Clone };
     skip "Clone not installed", 4 if $@;
-    # Test using censored_data as a class method
-    my $censored_data = Data::Censor->censored_data(get_data());
-    is($censored_data->{password}, $hidden,
-        "censored_data password censored (used as class method)");
-    is($censored_data->{email}, 'davidp@preshweb.co.uk',
-        "censored_data email not censored (used as class method)");
+    # Test using clone_and_censor as a class method
+    my $clone_and_censor = Data::Censor->clone_and_censor(get_data());
+    is($clone_and_censor->{password}, $hidden,
+        "clone_and_censor password censored (used as class method)");
+    is($clone_and_censor->{email}, 'davidp@preshweb.co.uk',
+        "clone_and_censor email not censored (used as class method)");
 
-    # Test using censored_data as an object method
+    # Test using clone_and_censor as an object method
     my $censor = Data::Censor->new( replacement => 'FOO' );
-    $censored_data = $censor->censored_data(get_data());
-    is ($censored_data->{password}, 'FOO',
-        "censored_data password censored (used as object method)");
-    is ($censored_data->{email}, 'davidp@preshweb.co.uk',
-        "censored_data email not censored (used as object method)");
+    $clone_and_censor = $censor->clone_and_censor(get_data());
+    is ($clone_and_censor->{password}, 'FOO',
+        "clone_and_censor password censored (used as object method)");
+    is ($clone_and_censor->{email}, 'davidp@preshweb.co.uk',
+        "clone_and_censor email not censored (used as object method)");
 }
 
 

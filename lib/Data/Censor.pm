@@ -32,8 +32,8 @@ our $VERSION = '0.01';
     my $censor_count = $censor->censor(\%data);
 
     # Alternate non-OO interface, using default settings and returning a cloned
-    # version of the data after censoring::
-    my $censored_data = Data::Censor->censored_data(\%data);
+    # version of the data after censoring:
+    my $censored_data = Data::Censor->clone_and_censor(\%data);
 
 
 =head1 new (CONSTRUCTOR)
@@ -145,13 +145,24 @@ sub censor {
     return $censored;
 }
 
-=head2 censored_data
+=head2 clone_and_censor
 
-Class method for quick censoring with default options - takes a hashref, clones
-it, applies censoring, and returns the resulting cloned hashref.
+Clones the provided hashref (using L<Clone> - will die if not installed), then
+censors the cloned data and returns it.
+
+Can be used both as a class or object method - the former for a quick way to use
+it without having to instantiate an object, the latter if you want to apply
+custom settings to the object before using it.
+
+  # As a class method
+  my $censored_data = Data::Censor->clone_and_censor($data);
+
+  # or as an object method
+  my $censor = Data::Censor->new( replacement => "SECRET!" );
+  my $censored_data = $censor->clone_and_censor($data);
 
 =cut
-sub censored_data {
+sub clone_and_censor {
     my $class = shift;
     my $data = shift;
     
