@@ -74,6 +74,7 @@ for instance mask a card number but leave the last 4 digits visible.
 
 If you provide both C<replacement> and C<replacement_callbacks>, any callback
 defined which matches the key being considered takes precedence.
+
 =back
 
 =cut
