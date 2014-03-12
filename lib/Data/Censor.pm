@@ -159,7 +159,15 @@ sub censored_data {
         or die "Can't clone data without Clone installed";
 
     my $cloned_data = Clone::clone($data);
-    $class->new->censor($cloned_data);
+
+    # if $class is a Data::Censor object, then we were called as an object method
+    # rather than a class method - that's fine - otherwise, create a new
+    # instance and use it:
+    my $self = ref $class && $class->isa('Data::Censor')
+        ? $class
+        : $class->new;
+
+    $self->censor($cloned_data);
     return $cloned_data;
 };
 
