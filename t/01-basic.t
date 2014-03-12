@@ -5,7 +5,7 @@ use warnings FATAL => 'all';
 use Test::More;
 use Data::Censor;
 
-plan tests => 7;
+plan tests => 9;
 
 diag( "Testing Data::Censor $Data::Censor::VERSION, Perl $], $^X" );
 
@@ -49,4 +49,13 @@ $count = $censor->censor($data);
 is($data->{password}, $hidden, "password censored normally");
 is ($data->{card}{pan}, 'xxxxxxxxx0006', "pan censored by callback");
 
+# Test basic censored_data call
+SKIP: {
+    eval { require Clone };
+    skip "Clone not installed", 2 if $@;
+    my $censored_data = Data::Censor->censored_data(get_data());
+    is($censored_data->{password}, $hidden, "censored_data password censored");
+    is($censored_data->{email}, 'davidp@preshweb.co.uk',
+        "censored_data email not censored");
+}
 
