@@ -23,4 +23,11 @@ WriteMakefile(
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'Data-Censor-*' },
+    META_MERGE => {
+        resources => {
+            repository => 'https://github.com/bigpresh/Data-Censor',
+            bugtracker => 'https://github.com/bigpresh/Data-Censor/issues',
+            homepage   => 'https://github.com/bigpresh/Data-Censor',
+        },
+    },
 );
