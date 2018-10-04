@@ -200,6 +200,28 @@ sub clone_and_censor {
     return $cloned_data;
 };
 
+=head2 occlude_middle
+
+Occlude the middle of a string, e.g. "string" => "st...g".
+
+Simple usage: pass a straight scalar containing the string to occlude, and it
+will keep two characters at the front, one at the end, and replace
+all others with dots, however, that behaviour can be customised by instead
+providing a hashref of options:
+
+=over
+
+=item string
+
+The string to occlude
+
+=item occlude_char
+
+The character to occlude with, default is C<.>.
+
+=item keep_start
+
+The number of characters to keep at the strt, default 2.
 
 =head1 AUTHOR
 
