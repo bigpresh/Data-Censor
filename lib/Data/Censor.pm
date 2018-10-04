@@ -94,8 +94,9 @@ sub new {
     } else {
         $self->{is_sensitive_field} = {
             map { $_ => 1 } qw(
-                pass  password  secret  private_key
-                cardnum  card_number  pan  cvv cvv2 ccv
+                pass         password     old_password   secret
+                private_key  cardnum      card_number    pan
+                cvv          cvv2         ccv
             )
         };
     }
