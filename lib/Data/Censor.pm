@@ -127,9 +127,10 @@ censoring potentially sensitive data within.
 =cut
 
 sub censor {
-    my ($self, $data, $recurse_count) = @_;
+    my ($self, $data, $recurse_count, $visited) = @_;
     $recurse_count ||= 0;
-    
+	$visited ||= {};
+
     no warnings 'recursion'; # we're checking ourselves.
 
     if ($recurse_count++ > $self->{recurse_limit}) {
@@ -137,28 +138,31 @@ sub censor {
         return;
     }
 
-	croak('censor expects a hashref') unless is_hashref $data;
+    croak('censor expects a hashref') unless is_hashref $data;
     
     my $censored = 0;
     for my $key (keys %$data) {
+
         if ( is_hashref $data->{$key} ) {
-            $censored += $self->censor($data->{$key}, $recurse_count);
-        } elsif (
-            ($self->{is_sensitive_field} && $self->{is_sensitive_field}{lc $key})
-            ||
-            ($self->{censor_regex} && $key =~ $self->{censor_regex})
-        ) {
-            # OK, censor this
-            if ($self->{replacement_callbacks}{lc $key}) {
-                $data->{$key} = $self->{replacement_callbacks}{lc $key}->(
-                    $data->{$key}
-                );
-                $censored++;
-            } else {
-                $data->{$key} = $self->{replacement};
-                $censored++;
-            }
-        }
+            $censored += $self->censor($data->{$key}, $recurse_count, $visited)
+				unless $visited->{ $data->{$key} }++;
+			next;
+        } 
+
+        next unless 
+            ($self->{is_sensitive_field} && $self->{is_sensitive_field}{lc $key}) 
+			or ($self->{censor_regex} && $key =~ $self->{censor_regex});
+
+		# OK, censor this
+		if ($self->{replacement_callbacks}{lc $key}) {
+			$data->{$key} = $self->{replacement_callbacks}{lc $key}->(
+				$data->{$key}
+			);
+			$censored++;
+		} else {
+			$data->{$key} = $self->{replacement};
+			$censored++;
+		}
     }
 
     return $censored;
