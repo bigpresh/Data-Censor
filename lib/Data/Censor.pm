@@ -5,6 +5,8 @@ use strict;
 use warnings FATAL => 'all';
 use Carp;
 
+use Ref::Util qw/ is_hashref /;
+
 =head1 NAME
 
 Data::Censor - censor sensitive stuff in a data structure
@@ -101,7 +103,7 @@ sub new {
         };
     }
 
-    if (ref $args{replacement_callbacks} eq 'HASH') {
+    if ( is_hashref $args{replacement_callbacks} ) {
         $self->{replacement_callbacks} = $args{replacement_callbacks};
     }
     if (exists $args{replacement}) {
@@ -135,13 +137,11 @@ sub censor {
         return;
     }
 
-    if (ref $data ne 'HASH') {
-        croak('censor expects a hashref');
-    }
+	croak('censor expects a hashref') unless is_hashref $data;
     
     my $censored = 0;
     for my $key (keys %$data) {
-        if (ref $data->{$key} eq 'HASH') {
+        if ( is_hashref $data->{$key} ) {
             $censored += $self->censor($data->{$key}, $recurse_count);
         } elsif (
             ($self->{is_sensitive_field} && $self->{is_sensitive_field}{lc $key})

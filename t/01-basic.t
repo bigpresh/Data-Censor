@@ -69,4 +69,12 @@ SKIP: {
         "clone_and_censor email not censored (used as object method)");
 }
 
+subtest 'objects as hashes' => sub {
+	my $data = bless {
+		password => 'hush',
+	} => 'MyThing';
 
+	$censor->censor($data);
+
+	isnt $data->{password} => 'hush', 'can process object instances';
+};
